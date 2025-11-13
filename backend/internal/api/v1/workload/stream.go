@@ -3,7 +3,6 @@ package workload
 import (
     "io"
     "net/http"
-    "time"
 
     "github.com/JasonYueng-1231/CyberKube/backend/internal/service"
     "github.com/gin-gonic/gin"
@@ -95,4 +94,3 @@ func (w *wsStream) Write(p []byte) (int, error) {
     return len(p), err
 }
 func (w *wsStream) Close() error { return w.conn.Close() }
-
