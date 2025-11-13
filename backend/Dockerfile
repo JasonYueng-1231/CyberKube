@@ -9,7 +9,6 @@ ENV GOPROXY=https://goproxy.cn,direct
 
 # 先复制模块文件，进行依赖预下载（容错）
 COPY go.mod ./
-COPY go.sum ./
 RUN go mod download || true
 
 # 再复制全部源码并整理依赖，生成 go.sum
