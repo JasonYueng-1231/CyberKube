@@ -33,6 +33,10 @@ docker compose up -d --build
 
 默认 `frontend` Nginx 将 `/api` 反向代理到 `backend:8080`。
 
+默认登录（首次启动自动创建）
+- 用户名：`admin`
+- 密码：`admin123`
+
 ## 关键环境变量
 
 - `MYSQL_DSN`：后端数据库连接（默认已在 compose 中配置）
@@ -51,4 +55,3 @@ GitHub Actions 在每次推送与 PR 时执行：
 ## 许可
 
 本仓库仅用于项目开发演示，未附带开源许可证。如需开源请补充许可证文件。
-
