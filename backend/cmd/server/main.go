@@ -20,6 +20,9 @@ func main() {
     ); err != nil {
         log.Fatalf("auto migrate error: %v", err)
     }
+    if err := database.EnsureDefaultAdmin(); err != nil {
+        log.Fatalf("seed admin error: %v", err)
+    }
 
     r := api.SetupRouter()
 
