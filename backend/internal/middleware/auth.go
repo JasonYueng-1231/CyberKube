@@ -12,12 +12,15 @@ func AuthMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         auth := c.GetHeader("Authorization")
         token := ""
-        if strings.HasPrefix(auth, "Bearer ") {
-            token = strings.TrimPrefix(auth, "Bearer ")
-        } else {
-            // 兼容 WebSocket：通过 query token 传递
+        if auth != "" {
+            // 兼容大小写与额外空格: "Bearer <token>"
+            parts := strings.Fields(auth)
+            if len(parts) == 2 && strings.ToLower(parts[0]) == "bearer" { token = parts[1] }
+        }
+        if token == "" {
+            // 兼容 WebSocket/某些代理剥离 Header 的情况: ?token= 或 ?token=Bearer%20xxx
             q := c.Query("token")
-            if q != "" && strings.HasPrefix(q, "Bearer ") { token = strings.TrimPrefix(q, "Bearer ") } else { token = q }
+            if strings.HasPrefix(strings.ToLower(q), "bearer ") { token = strings.TrimSpace(q[len("Bearer "):]) } else { token = q }
         }
         if token == "" {
             c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"code": 40101, "message": "未授权"})
