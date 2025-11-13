@@ -27,14 +27,6 @@ cp infra/example.env .env
 - 旧版二进制（docker-compose）：
   - `cd infra && docker-compose up -d --build`
 
-说明：已默认使用镜像加速（daocloud 代理）
-- 若无法访问 DockerHub，compose 已将基础镜像切换到 `docker.m.daocloud.io` 代理：
-  - Go: `docker.m.daocloud.io/library/golang:1.22-alpine`
-  - Node: `docker.m.daocloud.io/library/node:20-alpine`
-  - Nginx: `docker.m.daocloud.io/library/nginx:1.25-alpine`
-  - MySQL/Redis 同样使用该代理前缀
-- 如需还原官方镜像，可在 `infra/docker-compose.yml` 中删除/修改 `build.args` 和镜像前缀。
-
 3) 访问
 
 - 前端：`http://localhost:80`
