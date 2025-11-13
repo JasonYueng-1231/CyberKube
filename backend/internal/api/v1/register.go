@@ -1,7 +1,10 @@
 package v1
 
 import (
+    "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/auth"
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/health"
+    "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/cluster"
+    "github.com/JasonYueng-1231/CyberKube/backend/internal/middleware"
     "github.com/gin-gonic/gin"
 )
 
@@ -10,3 +13,12 @@ func RegisterHealth(r *gin.RouterGroup) {
     health.Register(r)
 }
 
+// RegisterAuth 注册认证路由
+func RegisterAuth(r *gin.RouterGroup) { auth.Register(r) }
+
+// RegisterCluster 注册集群管理路由（需鉴权）
+func RegisterCluster(r *gin.RouterGroup) {
+    g := r.Group("")
+    g.Use(middleware.AuthMiddleware())
+    cluster.Register(g)
+}

@@ -6,9 +6,21 @@ import (
     "os"
 
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api"
+    "github.com/JasonYueng-1231/CyberKube/backend/internal/database"
+    "github.com/JasonYueng-1231/CyberKube/backend/internal/model"
 )
 
 func main() {
+    if err := database.InitMySQL(); err != nil {
+        log.Fatalf("mysql init error: %v", err)
+    }
+    if err := database.AutoMigrate(
+        &model.User{},
+        &model.Cluster{},
+    ); err != nil {
+        log.Fatalf("auto migrate error: %v", err)
+    }
+
     r := api.SetupRouter()
 
     port := os.Getenv("PORT")
@@ -26,4 +38,3 @@ func main() {
         log.Fatalf("server error: %v", err)
     }
 }
-

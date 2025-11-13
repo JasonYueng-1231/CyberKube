@@ -27,6 +27,8 @@ func SetupRouter() *gin.Engine {
     apiV1 := r.Group("/api/v1")
     {
         v1.RegisterHealth(apiV1)
+        v1.RegisterAuth(apiV1)
+        v1.RegisterCluster(apiV1)
     }
 
     // 统一 404
@@ -41,4 +43,3 @@ func SetupRouter() *gin.Engine {
 
     return r
 }
-
