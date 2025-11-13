@@ -6,6 +6,8 @@ import (
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/cluster"
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/namespace"
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/metrics"
+    confapi "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/config"
+    svcapi "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/service"
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/workload"
     "github.com/JasonYueng-1231/CyberKube/backend/internal/middleware"
     "github.com/gin-gonic/gin"
@@ -44,4 +46,17 @@ func RegisterMetrics(r *gin.RouterGroup) {
     g := r.Group("")
     g.Use(middleware.AuthMiddleware())
     metrics.Register(g)
+}
+
+func RegisterConfig(r *gin.RouterGroup) {
+    g := r.Group("")
+    g.Use(middleware.AuthMiddleware())
+    confapi.RegisterConfigMap(g)
+    confapi.RegisterSecret(g)
+}
+
+func RegisterServiceAPI(r *gin.RouterGroup) {
+    g := r.Group("")
+    g.Use(middleware.AuthMiddleware())
+    svcapi.RegisterService(g)
 }

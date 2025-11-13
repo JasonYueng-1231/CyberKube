@@ -4,10 +4,15 @@ import {
   ClusterOutlined,
   DeploymentUnitOutlined,
   SettingOutlined,
+  ApiOutlined,
+  ProfileOutlined,
 } from '@ant-design/icons';
 import Dashboard from './pages/Dashboard';
 import ClusterList from './pages/Cluster/ClusterList';
 import Workloads from './pages/Workload';
+import ServiceList from './pages/Network/ServiceList';
+import ConfigMapList from './pages/Config/ConfigMapList';
+import SecretList from './pages/Config/SecretList';
 import Login from './pages/Login';
 import { useEffect, useState } from 'react';
 import './styles/global.css';
@@ -39,7 +44,10 @@ export default function App() {
             { key: 'dashboard', icon: <AppstoreOutlined />, label: '仪表盘' },
             { key: 'clusters', icon: <ClusterOutlined />, label: '集群' },
             { key: 'workloads', icon: <DeploymentUnitOutlined />, label: '工作负载' },
-            { key: 'settings', icon: <SettingOutlined />, label: '配置' },
+            { key: 'services', icon: <ApiOutlined />, label: '服务' },
+            { key: 'configmaps', icon: <ProfileOutlined />, label: 'ConfigMap' },
+            { key: 'secrets', icon: <ProfileOutlined />, label: 'Secret' },
+            { key: 'settings', icon: <SettingOutlined />, label: '设置' },
           ]}
           style={{ background: 'transparent' }}
         />
@@ -52,6 +60,9 @@ export default function App() {
           {active === 'dashboard' && <Dashboard />}
           {active === 'clusters' && <ClusterList />}
           {active === 'workloads' && <Workloads />}
+          {active === 'services' && <ServiceList />}
+          {active === 'configmaps' && <ConfigMapList />}
+          {active === 'secrets' && <SecretList />}
         </Content>
       </Layout>
     </Layout>
