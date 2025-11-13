@@ -21,8 +21,17 @@ const { Header, Sider, Content } = Layout;
 
 export default function App() {
   const [active, setActive] = useState('dashboard');
-  const [token, setToken] = useState<string | null>(null);
-  useEffect(() => { setToken(localStorage.getItem('token')); }, []);
+  const [token, setToken] = useState<string | null>(() => {
+    const t = (localStorage.getItem('token') || '').trim();
+    return t ? t : null;
+  });
+  useEffect(() => {
+    const onLogout = () => setToken(null);
+    window.addEventListener('auth-logout', onLogout as any);
+    return () => window.removeEventListener('auth-logout', onLogout as any);
+  }, []);
+  // 验证 token 是否有效：若无效触发请求中的 401 逻辑并退出
+  useEffect(() => { (async () => { if (token) { try { await api('/clusters'); } catch { setToken(null); } } })(); }, [token]);
   const {
     token: { colorBgContainer },
   } = theme.useToken();
@@ -55,7 +64,7 @@ export default function App() {
       <Layout>
         <Header style={{ background: colorBgContainer, backgroundColor: 'var(--bg-primary)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <div className="topbar">赛博朋克风格 Demo</div>
-          <Button onClick={()=> { localStorage.removeItem('token'); setToken(null); }}>
+          <Button onClick={()=> { localStorage.removeItem('token'); setToken(null); try { window.dispatchEvent(new CustomEvent('auth-logout')); } catch {} }}>
             退出登录
           </Button>
         </Header>

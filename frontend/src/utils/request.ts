@@ -13,6 +13,7 @@ export async function api(path: string, options: RequestInit = {}) {
   if (res.status === 401 || data?.code === 40101) {
     // 令牌失效或被替换（例如后端更换密钥），清除后回到登录
     localStorage.removeItem('token');
+    try { window.dispatchEvent(new CustomEvent('auth-logout', { detail: { reason: 'unauthorized' } })); } catch {}
     throw new Error('未授权或登录失效，请重新登录');
   }
   if (!res.ok || data.code !== 0) {
