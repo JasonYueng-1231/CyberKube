@@ -1,4 +1,4 @@
-import { Layout, Menu, theme } from 'antd';
+import { Layout, Menu, theme, Button } from 'antd';
 import {
   AppstoreOutlined,
   ClusterOutlined,
@@ -53,8 +53,11 @@ export default function App() {
         />
       </Sider>
       <Layout>
-        <Header style={{ background: colorBgContainer, backgroundColor: 'var(--bg-primary)' }}>
+        <Header style={{ background: colorBgContainer, backgroundColor: 'var(--bg-primary)', display:'flex', alignItems:'center', justifyContent:'space-between' }}>
           <div className="topbar">赛博朋克风格 Demo</div>
+          <Button onClick={()=> { localStorage.removeItem('token'); setToken(null); }}>
+            退出登录
+          </Button>
         </Header>
         <Content style={{ margin: 16 }}>
           {active === 'dashboard' && <Dashboard />}
