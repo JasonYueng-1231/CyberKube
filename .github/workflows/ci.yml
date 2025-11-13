@@ -17,7 +17,7 @@ jobs:
       - name: Build backend
         working-directory: backend
         run: |
-          go mod download
+          go mod tidy
           go vet ./...
           go build ./cmd/server
       - name: Unit tests
@@ -57,4 +57,3 @@ jobs:
           context: ./frontend
           push: false
           tags: cyberkube/frontend:ci
-
