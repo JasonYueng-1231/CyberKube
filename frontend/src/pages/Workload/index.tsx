@@ -1,6 +1,8 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/utils/request';
 import { Card, Tabs, Select, Button, Table, Modal, Form, message } from 'antd';
+import LogStreamModal from '@/components/LogStreamModal';
+import TerminalModal from '@/components/TerminalModal';
 
 export default function Workloads() {
   const [clusters, setClusters] = useState<any[]>([]);
@@ -14,6 +16,9 @@ export default function Workloads() {
   const [logOpen, setLogOpen] = useState(false);
   const [logs, setLogs] = useState('');
   const [form] = Form.useForm();
+  const [logCtx, setLogCtx] = useState<any>(null);
+  const [termOpen, setTermOpen] = useState(false);
+  const [termCtx, setTermCtx] = useState<any>(null);
 
   useEffect(() => { (async () => {
     const data = await api('/clusters');
@@ -50,12 +55,13 @@ export default function Workloads() {
       message.success('重启已提交');
     } catch(e:any) { message.error(e.message); }
   };
-  const viewLogs = async (name: string) => {
-    setLogOpen(true); setLogs('加载中...');
-    try {
-      const res = await fetch(`/api/v1/pods/logs?cluster=${cluster}&namespace=${namespace}&name=${encodeURIComponent(name)}&tail=200`, { headers: { Authorization: 'Bearer '+ localStorage.getItem('token') } });
-      const txt = await res.text(); setLogs(txt);
-    } catch { setLogs('获取日志失败'); }
+  const viewLogs = (r: any) => {
+    setLogCtx({ pod: r.name, containers: r.containers });
+    setLogOpen(true);
+  };
+  const openShell = (r: any) => {
+    setTermCtx({ pod: r.name, containers: r.containers });
+    setTermOpen(true);
   };
 
   return (
@@ -93,15 +99,17 @@ export default function Workloads() {
               { title:'就绪', dataIndex:'ready' },
               { title:'重启', dataIndex:'restarts' },
               { title:'节点', dataIndex:'node_name' },
-              { title:'操作', render: (_:any, r:any)=> <Button size="small" onClick={()=> viewLogs(r.name)}>日志</Button> },
+              { title:'操作', render: (_:any, r:any)=> <>
+                <Button size="small" onClick={()=> viewLogs(r)} style={{marginRight:8}}>日志(流)</Button>
+                <Button size="small" onClick={()=> openShell(r)}>Shell</Button>
+              </> },
             ]}
           />
         ) }
       ]} />
 
-      <Modal width={900} title="Pod 日志" open={logOpen} onCancel={()=> setLogOpen(false)} footer={null}>
-        <pre style={{ maxHeight: 500, overflow:'auto' }}>{logs}</pre>
-      </Modal>
+      <LogStreamModal open={logOpen} onClose={()=> setLogOpen(false)} cluster={cluster} namespace={namespace} pod={logCtx?.pod} containers={logCtx?.containers} />
+      <TerminalModal open={termOpen} onClose={()=> setTermOpen(false)} cluster={cluster} namespace={namespace} pod={termCtx?.pod} containers={termCtx?.containers} />
     </Card>
   );
 }

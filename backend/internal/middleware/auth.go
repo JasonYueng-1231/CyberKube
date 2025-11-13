@@ -11,11 +11,18 @@ import (
 func AuthMiddleware() gin.HandlerFunc {
     return func(c *gin.Context) {
         auth := c.GetHeader("Authorization")
-        if auth == "" || !strings.HasPrefix(auth, "Bearer ") {
+        token := ""
+        if strings.HasPrefix(auth, "Bearer ") {
+            token = strings.TrimPrefix(auth, "Bearer ")
+        } else {
+            // 兼容 WebSocket：通过 query token 传递
+            q := c.Query("token")
+            if q != "" && strings.HasPrefix(q, "Bearer ") { token = strings.TrimPrefix(q, "Bearer ") } else { token = q }
+        }
+        if token == "" {
             c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"code": 40101, "message": "未授权"})
             return
         }
-        token := strings.TrimPrefix(auth, "Bearer ")
         claims, err := appjwt.Parse(token)
         if err != nil {
             c.AbortWithStatusJSON(http.StatusUnauthorized, gin.H{"code": 40101, "message": "未授权"})
@@ -27,4 +34,3 @@ func AuthMiddleware() gin.HandlerFunc {
         c.Next()
     }
 }
-

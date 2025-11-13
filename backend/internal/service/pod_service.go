@@ -17,6 +17,7 @@ type PodItem struct {
     Ready     string `json:"ready"`
     Restarts  int32  `json:"restarts"`
     NodeName  string `json:"node_name"`
+    Containers []string `json:"containers"`
 }
 
 func ListPods(cluster, namespace string) ([]PodItem, error) {
@@ -33,10 +34,13 @@ func ListPods(cluster, namespace string) ([]PodItem, error) {
             if cs.Ready { ready++ }
             restarts += cs.RestartCount
         }
+        // 容器名
+        var containers []string
+        for _, c := range p.Spec.Containers { containers = append(containers, c.Name) }
         out = append(out, PodItem{
             Name: p.Name, Namespace: p.Namespace, Phase: string(p.Status.Phase),
             Ready: strings.Join([]string{strconv.Itoa(ready), strconv.Itoa(len(p.Status.ContainerStatuses))}, "/"),
-            Restarts: restarts, NodeName: p.Spec.NodeName,
+            Restarts: restarts, NodeName: p.Spec.NodeName, Containers: containers,
         })
     }
     return out, nil
