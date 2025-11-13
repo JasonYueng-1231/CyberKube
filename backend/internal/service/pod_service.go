@@ -59,3 +59,17 @@ func GetPodLogs(cluster, namespace, name string, tail int64) (string, error) {
     b, _ := io.ReadAll(rc)
     return string(b), nil
 }
+
+func GetPod(cluster, namespace, name string) (*corev1.Pod, error) {
+    cli, err := GetClientForCluster(cluster)
+    if err != nil { return nil, err }
+    return cli.CoreV1().Pods(namespace).Get(context.TODO(), name, metav1.GetOptions{})
+}
+
+func ListPodEvents(cluster, namespace, name string) ([]corev1.Event, error) {
+    cli, err := GetClientForCluster(cluster)
+    if err != nil { return nil, err }
+    list, err := cli.CoreV1().Events(namespace).List(context.TODO(), metav1.ListOptions{FieldSelector: "involvedObject.kind=Pod,involvedObject.name="+name})
+    if err != nil { return nil, err }
+    return list.Items, nil
+}

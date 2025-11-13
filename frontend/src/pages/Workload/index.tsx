@@ -3,6 +3,7 @@ import { api } from '@/utils/request';
 import { Card, Tabs, Select, Button, Table, Modal, Form, message } from 'antd';
 import LogStreamModal from '@/components/LogStreamModal';
 import TerminalModal from '@/components/TerminalModal';
+import DeploymentYamlModal from '@/components/DeploymentYamlModal';
 
 export default function Workloads() {
   const [clusters, setClusters] = useState<any[]>([]);
@@ -19,6 +20,8 @@ export default function Workloads() {
   const [logCtx, setLogCtx] = useState<any>(null);
   const [termOpen, setTermOpen] = useState(false);
   const [termCtx, setTermCtx] = useState<any>(null);
+  const [depYamlOpen, setDepYamlOpen] = useState(false);
+  const [depEdit, setDepEdit] = useState<string | undefined>(undefined);
 
   useEffect(() => { (async () => {
     const data = await api('/clusters');
@@ -66,7 +69,7 @@ export default function Workloads() {
 
   return (
     <Card className="cyber-card" title="工作负载">
-      <div style={{ marginBottom: 12, display:'flex', gap:8 }}>
+      <div style={{ marginBottom: 12, display:'flex', gap:8, alignItems:'center' }}>
         <Select value={cluster} onChange={setCluster} style={{ minWidth: 200 }} placeholder="选择集群"
           options={(clusters||[]).map((c:any)=> ({label:c.name, value:c.name}))}
         />
@@ -74,6 +77,7 @@ export default function Workloads() {
           options={(namespaces||[]).map(n=> ({label:n, value:n}))}
         />
         <Button onClick={()=>{loadDeps();loadPods();}}>刷新</Button>
+        <Button type="primary" onClick={()=> { setDepEdit(undefined); setDepYamlOpen(true); }}>新建 Deployment</Button>
       </div>
 
       <Tabs items={[
@@ -86,7 +90,8 @@ export default function Workloads() {
               { title:'操作', render: (_:any, r:any)=> <>
                 <Button size="small" onClick={()=> scale(r.name, r.replicas+1)} style={{marginRight:8}}>扩容</Button>
                 <Button size="small" onClick={()=> scale(r.name, Math.max(0, r.replicas-1))} style={{marginRight:8}}>缩容</Button>
-                <Button size="small" onClick={()=> restart(r.name)}>重启</Button>
+                <Button size="small" onClick={()=> restart(r.name)} style={{marginRight:8}}>重启</Button>
+                <Button size="small" onClick={()=> { setDepEdit(r.name); setDepYamlOpen(true); }}>编辑(YAML)</Button>
               </> }
             ]}
           />
@@ -110,6 +115,7 @@ export default function Workloads() {
 
       <LogStreamModal open={logOpen} onClose={()=> setLogOpen(false)} cluster={cluster} namespace={namespace} pod={logCtx?.pod} containers={logCtx?.containers} />
       <TerminalModal open={termOpen} onClose={()=> setTermOpen(false)} cluster={cluster} namespace={namespace} pod={termCtx?.pod} containers={termCtx?.containers} />
+      <DeploymentYamlModal open={depYamlOpen} onClose={()=> { setDepYamlOpen(false); loadDeps(); }} cluster={cluster} namespace={namespace} name={depEdit} />
     </Card>
   );
 }

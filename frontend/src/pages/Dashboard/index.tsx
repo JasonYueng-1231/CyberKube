@@ -4,11 +4,15 @@ import StatsCard from '@/shared/StatsCard/StatsCard';
 import '@/shared/StatsCard/StatsCard.css';
 import { useEffect, useState } from 'react';
 import { api } from '@/utils/request';
+import * as echarts from 'echarts';
 
 export default function Dashboard() {
   const [clusters, setClusters] = useState<any[]>([]);
   const [cluster, setCluster] = useState<string>('');
   const [overview, setOverview] = useState<any>({ cpu_percent: 62, mem_percent: 48 });
+  const [cpuData, setCpuData] = useState<number[]>([]);
+  const [memData, setMemData] = useState<number[]>([]);
+  const chartRef = (globalThis as any).chartRef || (globalThis as any).chartRef = { current: null };
 
   useEffect(() => { (async () => {
     try {
@@ -25,8 +29,47 @@ export default function Dashboard() {
       const data = await api(`/metrics/overview?cluster=${cluster}`);
       if (data.cpu_percent >= 0) setOverview((o:any)=> ({...o, cpu_percent: data.cpu_percent}));
       if (data.mem_percent >= 0) setOverview((o:any)=> ({...o, mem_percent: data.mem_percent}));
+      if (data.cpu_percent >= 0) setCpuData(d=> [...d.slice(-59), Math.round(data.cpu_percent)]);
+      if (data.mem_percent >= 0) setMemData(d=> [...d.slice(-59), Math.round(data.mem_percent)]);
     } catch {}
   })(); }, [cluster]);
+
+  // 每5秒轮询一次，推入趋势数据
+  useEffect(() => {
+    const t = setInterval(async () => {
+      if (!cluster) return;
+      try {
+        const data = await api(`/metrics/overview?cluster=${cluster}`);
+        if (data.cpu_percent >= 0) setCpuData(d=> [...d.slice(-59), Math.round(data.cpu_percent)]);
+        if (data.mem_percent >= 0) setMemData(d=> [...d.slice(-59), Math.round(data.mem_percent)]);
+        if (data.cpu_percent >= 0) setOverview((o:any)=> ({...o, cpu_percent: data.cpu_percent}));
+        if (data.mem_percent >= 0) setOverview((o:any)=> ({...o, mem_percent: data.mem_percent}));
+      } catch {}
+    }, 5000);
+    return () => clearInterval(t);
+  }, [cluster]);
+
+  useEffect(() => {
+    const el = document.getElementById('trend-chart');
+    if (!el) return;
+    const inst = echarts.init(el as any);
+    chartRef.current = inst;
+    return () => inst.dispose();
+  }, []);
+
+  useEffect(() => {
+    const inst: any = chartRef.current; if (!inst) return;
+    inst.setOption({
+      grid: { left: 40, right: 20, top: 20, bottom: 30 },
+      xAxis: { type: 'category', boundaryGap: false, data: Array(Math.max(cpuData.length, memData.length)).fill('').map((_,i)=> i.toString()) },
+      yAxis: { type: 'value', min: 0, max: 100 },
+      series: [
+        { type: 'line', name: 'CPU%', data: cpuData, smooth: true },
+        { type: 'line', name: '内存%', data: memData, smooth: true },
+      ],
+      tooltip: { trigger: 'axis' }
+    });
+  }, [cpuData.join(','), memData.join(',')]);
   return (
     <div>
       <div style={{ display:'flex', justifyContent:'flex-end', marginBottom: 12 }}>
@@ -46,6 +89,13 @@ export default function Dashboard() {
         </Col>
         <Col xs={24} md={12} lg={6}>
           <StatsCard color="cyan" icon={<CodeOutlined />} value={26} label="服务" status="LB 4 / NodePort 6" />
+        </Col>
+      </Row>
+      <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
+        <Col span={24}>
+          <Card className="cyber-card" title="CPU/内存 使用率趋势 (近5分钟)">
+            <div id="trend-chart" style={{ height: 260 }} />
+          </Card>
         </Col>
       </Row>
 

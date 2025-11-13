@@ -37,4 +37,28 @@ func RegisterDeployment(r *gin.RouterGroup) {
         }
         c.JSON(http.StatusOK, gin.H{"code":0, "message":"success"})
     })
+    // 详情: GET /api/v1/deployments/detail?cluster=&namespace=&name=
+    r.GET("/deployments/detail", func(c *gin.Context) {
+        cluster := c.Query("cluster"); ns := c.Query("namespace"); name := c.Query("name")
+        if ns == "" { ns = "default" }
+        dep, err := service.GetDeployment(cluster, ns, name)
+        if err != nil { c.JSON(http.StatusInternalServerError, gin.H{"code":50003, "message": err.Error()}); return }
+        c.JSON(http.StatusOK, gin.H{"code":0, "message":"success", "data": dep})
+    })
+    // 创建(YAML)
+    r.POST("/deployments/yaml", func(c *gin.Context) {
+        var req struct{ Cluster, Namespace, Yaml string }
+        if err := c.ShouldBindJSON(&req); err != nil { c.JSON(http.StatusBadRequest, gin.H{"code":40001, "message":"参数错误"}); return }
+        if req.Namespace == "" { req.Namespace = "default" }
+        if err := service.CreateDeploymentFromYAML(req.Cluster, req.Namespace, req.Yaml); err != nil { c.JSON(http.StatusBadRequest, gin.H{"code":40901, "message": err.Error()}); return }
+        c.JSON(http.StatusOK, gin.H{"code":0, "message":"success"})
+    })
+    // 更新(YAML)
+    r.PUT("/deployments/yaml", func(c *gin.Context) {
+        var req struct{ Cluster, Namespace, Yaml string }
+        if err := c.ShouldBindJSON(&req); err != nil { c.JSON(http.StatusBadRequest, gin.H{"code":40001, "message":"参数错误"}); return }
+        if req.Namespace == "" { req.Namespace = "default" }
+        if err := service.UpdateDeploymentFromYAML(req.Cluster, req.Namespace, req.Yaml); err != nil { c.JSON(http.StatusBadRequest, gin.H{"code":40901, "message": err.Error()}); return }
+        c.JSON(http.StatusOK, gin.H{"code":0, "message":"success"})
+    })
 }

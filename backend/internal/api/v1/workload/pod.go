@@ -31,5 +31,21 @@ func RegisterPod(r *gin.RouterGroup) {
         if err != nil { c.JSON(http.StatusInternalServerError, gin.H{"code":50003, "message": err.Error()}); return }
         c.Data(http.StatusOK, "text/plain; charset=utf-8", []byte(logs))
     })
+    // 事件: GET /api/v1/pods/events?cluster=&namespace=&name=
+    r.GET("/pods/events", func(c *gin.Context) {
+        cluster := c.Query("cluster"); ns := c.Query("namespace"); name := c.Query("name")
+        if ns == "" { ns = "default" }
+        items, err := service.ListPodEvents(cluster, ns, name)
+        if err != nil { c.JSON(http.StatusInternalServerError, gin.H{"code":50003, "message": err.Error()}); return }
+        c.JSON(http.StatusOK, gin.H{"code":0, "message":"success", "data": gin.H{"items": items}})
+    })
+    // 详情: GET /api/v1/pods/detail?cluster=&namespace=&name=
+    r.GET("/pods/detail", func(c *gin.Context) {
+        cluster := c.Query("cluster"); ns := c.Query("namespace"); name := c.Query("name")
+        if ns == "" { ns = "default" }
+        pod, err := service.GetPod(cluster, ns, name)
+        if err != nil { c.JSON(http.StatusInternalServerError, gin.H{"code":50003, "message": err.Error()}); return }
+        evs, _ := service.ListPodEvents(cluster, ns, name)
+        c.JSON(http.StatusOK, gin.H{"code":0, "message":"success", "data": gin.H{"pod": pod, "events": evs}})
+    })
 }
-
