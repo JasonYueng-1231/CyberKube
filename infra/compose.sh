@@ -7,25 +7,29 @@ COMPOSE_FILE="$REPO_DIR/infra/docker-compose.yml"
 
 echo "[compose] using file: $COMPOSE_FILE"
 
-# Try docker compose plugin first (Docker 20.10+)
-if docker compose version >/dev/null 2>&1; then
-  # Some older Dockers print Docker version instead of Compose version; try a harmless command
-  if docker compose ls >/dev/null 2>&1; then
-    echo "[compose] detected docker compose plugin"
+# Prefer containerized compose to avoid local Python/plugin issues
+
+# If user explicitly asks to use local tool
+if [[ "${FORCE_LOCAL_COMPOSE:-}" == "1" ]]; then
+  echo "[compose] FORCE_LOCAL_COMPOSE=1, trying local tools"
+  if docker compose version 2>&1 | grep -qi "Docker Compose version"; then
     exec docker compose -f "$COMPOSE_FILE" "$@"
-  fi
-fi
-
-# Fallback to docker-compose binary if usable
-if command -v docker-compose >/dev/null 2>&1; then
-  if docker-compose version >/dev/null 2>&1; then
-    echo "[compose] using docker-compose binary"
+  elif command -v docker-compose >/dev/null 2>&1; then
     exec docker-compose -f "$COMPOSE_FILE" "$@"
+  else
+    echo "[compose] no local compose available" >&2
   fi
 fi
 
-# Final fallback: containerized docker/compose (works on old Docker)
+# Try plugin only if it looks like real compose (not plain Docker version)
+if docker compose version 2>&1 | grep -qi "Docker Compose version"; then
+  echo "[compose] detected docker compose plugin"
+  exec docker compose -f "$COMPOSE_FILE" "$@"
+fi
+
+# Containerized compose (robust on old Docker)
 echo "[compose] using containerized docker/compose:1.29.2"
+docker image inspect docker/compose:1.29.2 >/dev/null 2>&1 || docker pull -q docker/compose:1.29.2
 exec docker run --rm -i \
   -v /var/run/docker.sock:/var/run/docker.sock \
   -v "$REPO_DIR":"$REPO_DIR" -w "$REPO_DIR" \
