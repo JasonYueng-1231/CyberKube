@@ -2,7 +2,6 @@ package workload
 
 import (
     "net/http"
-    "strconv"
 
     "github.com/JasonYueng-1231/CyberKube/backend/internal/service"
     "github.com/gin-gonic/gin"
@@ -39,4 +38,3 @@ func RegisterDeployment(r *gin.RouterGroup) {
         c.JSON(http.StatusOK, gin.H{"code":0, "message":"success"})
     })
 }
-
