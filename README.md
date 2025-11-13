@@ -22,9 +22,10 @@ cp infra/example.env .env
 
 2) 构建并启动
 
-```
-docker compose up -d --build
-```
+- 新版插件（docker compose）：
+  - `cd infra && docker compose up -d --build`
+- 旧版二进制（docker-compose）：
+  - `cd infra && docker-compose up -d --build`
 
 3) 访问
 
