@@ -11,6 +11,7 @@ import (
     "github.com/JasonYueng-1231/CyberKube/backend/pkg/encrypt"
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
     "k8s.io/client-go/kubernetes"
+    "k8s.io/client-go/rest"
 )
 
 // GetClientForCluster 确保并返回指定集群的 clientset
@@ -42,4 +43,8 @@ func SimplePing(cli *kubernetes.Clientset) (map[string]interface{}, error) {
         "nodes":   len(nodes.Items),
         "namespaces": len(ns.Items),
     }, nil
+}
+
+func GetRestConfig(cluster string) (*rest.Config, error) {
+    return k8s.Manager.GetConfig(cluster)
 }

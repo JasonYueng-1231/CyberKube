@@ -1,11 +1,12 @@
 import { useEffect, useState } from 'react';
 import { api } from '@/utils/request';
-import { Card, Tabs, Select, Input, Button, Table, Modal, Form, message } from 'antd';
+import { Card, Tabs, Select, Button, Table, Modal, Form, message } from 'antd';
 
 export default function Workloads() {
   const [clusters, setClusters] = useState<any[]>([]);
   const [cluster, setCluster] = useState<string>('');
   const [namespace, setNamespace] = useState<string>('default');
+  const [namespaces, setNamespaces] = useState<string[]>(['default']);
 
   const [deps, setDeps] = useState<any[]>([]);
   const [pods, setPods] = useState<any[]>([]);
@@ -19,6 +20,12 @@ export default function Workloads() {
     setClusters(data.items || []);
     if (!cluster && data.items?.length) setCluster(data.items[0].name);
   })(); }, []);
+
+  // 加载命名空间
+  useEffect(() => { (async () => {
+    if (!cluster) return;
+    try { const data = await api(`/namespaces?cluster=${cluster}`); setNamespaces(data.items || ['default']); if (!data.items?.includes(namespace)) setNamespace('default'); } catch {}
+  })(); }, [cluster]);
 
   const loadDeps = async () => {
     if (!cluster) return; setLoading(true);
@@ -54,10 +61,12 @@ export default function Workloads() {
   return (
     <Card className="cyber-card" title="工作负载">
       <div style={{ marginBottom: 12, display:'flex', gap:8 }}>
-        <Select value={cluster} onChange={setCluster} style={{ minWidth: 200 }} placeholder="选择集群">
-          {clusters.map((c:any)=> <Select.Option key={c.name} value={c.name}>{c.name}</Select.Option>)}
-        </Select>
-        <Input value={namespace} onChange={(e)=> setNamespace(e.target.value)} style={{ width: 200 }} placeholder="命名空间，如 default"/>
+        <Select value={cluster} onChange={setCluster} style={{ minWidth: 200 }} placeholder="选择集群"
+          options={(clusters||[]).map((c:any)=> ({label:c.name, value:c.name}))}
+        />
+        <Select value={namespace} onChange={setNamespace} style={{ minWidth: 200 }} placeholder="命名空间"
+          options={(namespaces||[]).map(n=> ({label:n, value:n}))}
+        />
         <Button onClick={()=>{loadDeps();loadPods();}}>刷新</Button>
       </div>
 
@@ -96,4 +105,3 @@ export default function Workloads() {
     </Card>
   );
 }
-

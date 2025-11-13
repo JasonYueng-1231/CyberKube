@@ -4,6 +4,8 @@ import (
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/auth"
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/health"
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/cluster"
+    "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/namespace"
+    "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/metrics"
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/workload"
     "github.com/JasonYueng-1231/CyberKube/backend/internal/middleware"
     "github.com/gin-gonic/gin"
@@ -29,4 +31,17 @@ func RegisterWorkload(r *gin.RouterGroup) {
     g.Use(middleware.AuthMiddleware())
     workload.RegisterDeployment(g)
     workload.RegisterPod(g)
+    workload.RegisterStream(g)
+}
+
+func RegisterNamespace(r *gin.RouterGroup) {
+    g := r.Group("")
+    g.Use(middleware.AuthMiddleware())
+    namespace.Register(g)
+}
+
+func RegisterMetrics(r *gin.RouterGroup) {
+    g := r.Group("")
+    g.Use(middleware.AuthMiddleware())
+    metrics.Register(g)
 }
