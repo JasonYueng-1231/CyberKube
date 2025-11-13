@@ -2,7 +2,8 @@
 # CyberKube Backend Dockerfile
 # ==========================
 
-FROM golang:1.22-alpine AS builder
+ARG GO_IMAGE=golang:1.22-alpine
+FROM ${GO_IMAGE} AS builder
 WORKDIR /app
 
 ENV GOPROXY=https://goproxy.cn,direct

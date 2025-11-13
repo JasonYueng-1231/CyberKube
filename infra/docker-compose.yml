@@ -2,7 +2,7 @@ version: "3.7"
 
 services:
   mysql:
-    image: mysql:8.4
+    image: docker.m.daocloud.io/library/mysql:8.4
     environment:
       MYSQL_ROOT_PASSWORD: cyberkube@123
       MYSQL_DATABASE: cyberkube
@@ -16,13 +16,16 @@ services:
       retries: 10
 
   redis:
-    image: redis:7.2-alpine
+    image: docker.m.daocloud.io/library/redis:7.2-alpine
     ports:
       - "6379:6379"
     restart: unless-stopped
 
   backend:
-    build: ../backend
+    build:
+      context: ../backend
+      args:
+        GO_IMAGE: docker.m.daocloud.io/library/golang:1.22-alpine
     environment:
       PORT: "8080"
       MYSQL_DSN: "root:cyberkube@123@tcp(mysql:3306)/cyberkube?charset=utf8mb4&parseTime=True&loc=Local"
@@ -37,7 +40,11 @@ services:
     restart: unless-stopped
 
   frontend:
-    build: ../frontend
+    build:
+      context: ../frontend
+      args:
+        NODE_IMAGE: docker.m.daocloud.io/library/node:20-alpine
+        NGINX_IMAGE: docker.m.daocloud.io/library/nginx:1.25-alpine
     ports:
       - "80:80"
     depends_on:
