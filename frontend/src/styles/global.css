@@ -1,0 +1,32 @@
+@import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700&family=Rajdhani:wght@400;600;700&display=swap');
+
+:root {
+  --bg-primary: #0a0e27;
+  --bg-secondary: #131729;
+  --bg-tertiary: #1a1f3a;
+  --bg-card: rgba(26, 31, 58, 0.8);
+  --bg-sidebar: rgba(19, 23, 41, 0.95);
+  --text-primary: #e0e6ed;
+  --text-secondary: #8b92a9;
+  --border-normal: #2d3548;
+  --border-glow: rgba(0, 246, 255, 0.3);
+  --border-active: #00f6ff;
+  --neon-cyan: #00f6ff;
+  --neon-purple: #b537f2;
+  --neon-green: #39ff14;
+  --neon-yellow: #ffed4e;
+  --neon-red: #ff006e;
+  --shadow-cyan-md: 0 0 20px rgba(0, 246, 255, 0.5);
+  --shadow-purple-md: 0 0 20px rgba(181, 55, 242, 0.5);
+  --shadow-green-md: 0 0 20px rgba(57, 255, 20, 0.5);
+  --gradient-cyan-purple: linear-gradient(135deg, #00f6ff 0%, #b537f2 100%);
+  --gradient-progress-cyan: linear-gradient(90deg, #00f6ff 0%, rgba(0, 246, 255, 0.3) 100%);
+  --gradient-progress-red: linear-gradient(90deg, #ff006e 0%, rgba(255, 0, 110, 0.3) 100%);
+}
+
+html, body, #root { height: 100%; }
+body { margin: 0; background: linear-gradient(135deg, #0a0e27 0%, #1a1f3a 100%); color: var(--text-primary); font-family: Inter, system-ui, Avenir, Helvetica, Arial, sans-serif; }
+
+.logo { color: var(--neon-cyan); font-weight: 700; padding: 16px; text-shadow: 0 0 12px rgba(0, 246, 255, 0.8); }
+.topbar { color: var(--text-primary); font-weight: 600; }
+

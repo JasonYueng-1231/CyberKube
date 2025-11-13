@@ -1,0 +1,23 @@
+# general
+.DS_Store
+*.log
+*.tmp
+*.swp
+
+# backend
+/backend/bin/
+/backend/dist/
+/backend/.idea/
+/backend/.vscode/
+/backend/coverage/
+
+# frontend
+/frontend/node_modules/
+/frontend/dist/
+/frontend/.eslintcache
+/frontend/.idea/
+/frontend/.vscode/
+
+# env
+.env
+
