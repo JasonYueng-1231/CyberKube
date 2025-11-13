@@ -2,7 +2,7 @@ import { Card, Row, Col, Button, Select, message } from 'antd';
 import { RocketOutlined, ApiOutlined, AppstoreAddOutlined, CodeOutlined } from '@ant-design/icons';
 import StatsCard from '@/shared/StatsCard/StatsCard';
 import '@/shared/StatsCard/StatsCard.css';
-import { useEffect, useState } from 'react';
+import { useEffect, useState, useRef } from 'react';
 import { api } from '@/utils/request';
 import * as echarts from 'echarts';
 
@@ -12,7 +12,8 @@ export default function Dashboard() {
   const [overview, setOverview] = useState<any>({ cpu_percent: 62, mem_percent: 48 });
   const [cpuData, setCpuData] = useState<number[]>([]);
   const [memData, setMemData] = useState<number[]>([]);
-  const chartRef = (globalThis as any).chartRef || (globalThis as any).chartRef = { current: null };
+  const containerRef = useRef<HTMLDivElement | null>(null);
+  const chartRef = useRef<echarts.ECharts | null>(null);
 
   useEffect(() => { (async () => {
     try {
@@ -50,15 +51,15 @@ export default function Dashboard() {
   }, [cluster]);
 
   useEffect(() => {
-    const el = document.getElementById('trend-chart');
+    const el = containerRef.current;
     if (!el) return;
-    const inst = echarts.init(el as any);
+    const inst = echarts.init(el);
     chartRef.current = inst;
     return () => inst.dispose();
   }, []);
 
   useEffect(() => {
-    const inst: any = chartRef.current; if (!inst) return;
+    const inst = chartRef.current; if (!inst) return;
     inst.setOption({
       grid: { left: 40, right: 20, top: 20, bottom: 30 },
       xAxis: { type: 'category', boundaryGap: false, data: Array(Math.max(cpuData.length, memData.length)).fill('').map((_,i)=> i.toString()) },
@@ -94,7 +95,7 @@ export default function Dashboard() {
       <Row gutter={[16, 16]} style={{ marginTop: 16 }}>
         <Col span={24}>
           <Card className="cyber-card" title="CPU/内存 使用率趋势 (近5分钟)">
-            <div id="trend-chart" style={{ height: 260 }} />
+            <div ref={containerRef} style={{ height: 260 }} />
           </Card>
         </Col>
       </Row>
