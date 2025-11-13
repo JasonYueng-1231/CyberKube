@@ -30,8 +30,7 @@ export default function App() {
     window.addEventListener('auth-logout', onLogout as any);
     return () => window.removeEventListener('auth-logout', onLogout as any);
   }, []);
-  // 验证 token 是否有效：若无效触发请求中的 401 逻辑并退出
-  useEffect(() => { (async () => { if (token) { try { await api('/clusters'); } catch { setToken(null); } } })(); }, [token]);
+  // 交由各 API 的 401 统一处理，不在此处强制拉取校验，避免首次登录时闪退
   const {
     token: { colorBgContainer },
   } = theme.useToken();

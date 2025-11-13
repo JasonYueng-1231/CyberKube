@@ -6,10 +6,14 @@ export default function Login({ onSuccess }: { onSuccess: (token: string) => voi
 
   const onFinish = async (v: any) => {
     try {
+      // 避免携带陈旧 Authorization 头影响登录
+      localStorage.removeItem('token');
       const data = await api('/auth/login', { method: 'POST', body: JSON.stringify(v) });
+      // 登录成功后立即写入 token，并回调上层切换到应用
+      try { localStorage.setItem('token', data.token); } catch {}
       onSuccess(data.token);
     } catch (e: any) {
-      message.error(e.message);
+      message.error(e.message || '登录失败');
     }
   };
 
@@ -29,4 +33,3 @@ export default function Login({ onSuccess }: { onSuccess: (token: string) => voi
     </div>
   );
 }
-
