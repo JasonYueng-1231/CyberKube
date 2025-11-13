@@ -3,7 +3,7 @@ import { api } from '@/utils/request';
 import { Card, Tabs, Select, Button, Table, Modal, Form, message } from 'antd';
 import LogStreamModal from '@/components/LogStreamModal';
 import TerminalModal from '@/components/TerminalModal';
-import DeploymentYamlModal from '@/components/DeploymentYamlModal';
+import GenericYamlModal from '@/components/GenericYamlModal';
 
 export default function Workloads() {
   const [clusters, setClusters] = useState<any[]>([]);
@@ -115,7 +115,7 @@ export default function Workloads() {
 
       <LogStreamModal open={logOpen} onClose={()=> setLogOpen(false)} cluster={cluster} namespace={namespace} pod={logCtx?.pod} containers={logCtx?.containers} />
       <TerminalModal open={termOpen} onClose={()=> setTermOpen(false)} cluster={cluster} namespace={namespace} pod={termCtx?.pod} containers={termCtx?.containers} />
-      <DeploymentYamlModal open={depYamlOpen} onClose={()=> { setDepYamlOpen(false); loadDeps(); }} cluster={cluster} namespace={namespace} name={depEdit} />
+      <GenericYamlModal open={depYamlOpen} onClose={()=> { setDepYamlOpen(false); loadDeps(); }} cluster={cluster} namespace={namespace} name={depEdit} kind='deployment' />
     </Card>
   );
 }

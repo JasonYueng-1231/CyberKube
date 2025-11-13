@@ -3,13 +3,13 @@ import { useEffect, useState } from 'react';
 import { api } from '@/utils/request';
 import YamlEditor from './YamlEditor';
 
-interface Props { open: boolean; onClose: () => void; cluster: string; namespace: string; name?: string; kind: 'service'|'configmap'|'secret' }
+interface Props { open: boolean; onClose: () => void; cluster: string; namespace: string; name?: string; kind: 'service'|'configmap'|'secret'|'deployment' }
 
 export default function GenericYamlModal({ open, onClose, cluster, namespace, name, kind }: Props) {
   const [yaml, setYaml] = useState('');
   const isEdit = !!name;
 
-  const base = kind === 'service' ? 'services' : (kind === 'configmap' ? 'configmaps' : 'secrets');
+  const base = kind === 'service' ? 'services' : (kind === 'configmap' ? 'configmaps' : (kind === 'secret' ? 'secrets' : 'deployments'));
 
   useEffect(() => { (async () => {
     if (!open) return;
@@ -37,6 +37,27 @@ export default function GenericYamlModal({ open, onClose, cluster, namespace, na
 }
 
 function sample(kind: string, ns: string) {
+  if (kind === 'deployment') return `apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: demo-deployment
+  namespace: ${ns}
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: demo
+  template:
+    metadata:
+      labels:
+        app: demo
+    spec:
+      containers:
+        - name: nginx
+          image: nginx:1.25-alpine
+          ports:
+            - containerPort: 80
+`;
   if (kind === 'service') return `apiVersion: v1
 kind: Service
 metadata:
@@ -70,4 +91,3 @@ stringData:
   password: pass
 `;
 }
-
