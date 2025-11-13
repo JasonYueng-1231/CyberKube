@@ -26,6 +26,13 @@ export default function ClusterList() {
     } catch (e: any) { message.error(e.message); }
   };
 
+  const health = async (name: string) => {
+    try {
+      const data = await api(`/clusters/${name}/health`);
+      message.success(`版本:${data.version} 节点:${data.nodes} 命名空间:${data.namespaces}`);
+    } catch (e:any) { message.error(e.message); }
+  };
+
   const remove = async (name: string) => {
     Modal.confirm({ title: `删除集群 ${name}?`, onOk: async () => {
       await api(`/clusters/${name}`, { method: 'DELETE' });
@@ -42,7 +49,10 @@ export default function ClusterList() {
           { title: 'API Server', dataIndex: 'api_server' },
           { title: '版本', dataIndex: 'version' },
           { title: '状态', dataIndex: 'status', render: (v) => (v === 1 ? '正常' : '异常') },
-          { title: '操作', render: (_:any, r:any) => <Button danger onClick={() => remove(r.name)}>删除</Button> },
+          { title: '操作', render: (_:any, r:any) => <>
+            <Button style={{marginRight:8}} onClick={() => health(r.name)}>健康检查</Button>
+            <Button danger onClick={() => remove(r.name)}>删除</Button>
+          </> },
         ]}
       />
 
@@ -68,4 +78,3 @@ export default function ClusterList() {
     </Card>
   );
 }
-

@@ -29,6 +29,7 @@ func SetupRouter() *gin.Engine {
         v1.RegisterHealth(apiV1)
         v1.RegisterAuth(apiV1)
         v1.RegisterCluster(apiV1)
+        v1.RegisterWorkload(apiV1)
     }
 
     // 统一 404

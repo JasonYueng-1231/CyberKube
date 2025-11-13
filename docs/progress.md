@@ -10,7 +10,9 @@
 | 3 | Compose 与 Nginx 配置 | AI | 已完成 | MySQL 8.4、Redis 7.2、Nginx 反代 /api |
 | 4 | CI 工作流配置 | AI | 已完成 | 后端/前端构建校验与镜像构建校验 |
 | 5 | 推送 GitHub 首版 | AI | 已完成 | 初始化 main 分支并推送 |
-| 6 | 认证与集群管理 MVP | AI | 进行中 | JWT 登录、默认 admin、集群创建/列表/删除，前端登录与集群页 |
+| 6 | 认证与集群管理 MVP | AI | 已完成 | JWT 登录、默认 admin、集群创建/列表/删除，前端登录与集群页 |
+| 7 | 集群健康检查 | AI | 已完成 | GET /api/v1/clusters/:name/health + 前端一键检查 |
+| 8 | 工作负载基础 | AI | 进行中 | Deployment 列表/伸缩/重启；Pod 列表与日志；前端 Workloads 页 |
 
 后续里程碑（MVP）
 - 用户与登录（本地用户 + JWT）

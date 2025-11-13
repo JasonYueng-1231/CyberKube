@@ -25,5 +25,11 @@ func Register(r *gin.RouterGroup) {
         if err := service.DeleteCluster(c.Param("name")); err != nil { c.JSON(http.StatusInternalServerError, gin.H{"code":50001, "message":err.Error()}); return }
         c.JSON(http.StatusOK, gin.H{"code":0, "message":"success"})
     })
+    g.GET(":name/health", func(c *gin.Context) {
+        cli, err := service.GetClientForCluster(c.Param("name"))
+        if err != nil { c.JSON(http.StatusBadRequest, gin.H{"code":40901, "message": err.Error()}); return }
+        info, err := service.SimplePing(cli)
+        if err != nil { c.JSON(http.StatusInternalServerError, gin.H{"code":50003, "message": err.Error()}); return }
+        c.JSON(http.StatusOK, gin.H{"code":0, "message":"success", "data": info})
+    })
 }
-

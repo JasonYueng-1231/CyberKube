@@ -7,6 +7,7 @@ import {
 } from '@ant-design/icons';
 import Dashboard from './pages/Dashboard';
 import ClusterList from './pages/Cluster/ClusterList';
+import Workloads from './pages/Workload';
 import Login from './pages/Login';
 import { useEffect, useState } from 'react';
 import './styles/global.css';
@@ -50,6 +51,7 @@ export default function App() {
         <Content style={{ margin: 16 }}>
           {active === 'dashboard' && <Dashboard />}
           {active === 'clusters' && <ClusterList />}
+          {active === 'workloads' && <Workloads />}
         </Content>
       </Layout>
     </Layout>
