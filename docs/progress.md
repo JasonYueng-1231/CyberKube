@@ -12,7 +12,9 @@
 | 5 | 推送 GitHub 首版 | AI | 已完成 | 初始化 main 分支并推送 |
 | 6 | 认证与集群管理 MVP | AI | 已完成 | JWT 登录、默认 admin、集群创建/列表/删除，前端登录与集群页 |
 | 7 | 集群健康检查 | AI | 已完成 | GET /api/v1/clusters/:name/health + 前端一键检查 |
-| 8 | 工作负载基础 | AI | 进行中 | Deployment 列表/伸缩/重启；Pod 列表与日志；前端 Workloads 页 |
+| 8 | 工作负载基础 | AI | 已完成 | Deployment 列表/伸缩/重启；Pod 列表/日志流/Shell；前端 Workloads 页 |
+| 9 | 配置与服务管理 | AI | 已完成 | Service/ConfigMap/Secret 列表、YAML 创建/更新/删除，Monaco 编辑器 |
+| 10 | 仪表盘趋势与指标 | AI | 已完成 | 轮询 Metrics 概览，ECharts 趋势图 |
 
 后续里程碑（MVP）
 - 用户与登录（本地用户 + JWT）
