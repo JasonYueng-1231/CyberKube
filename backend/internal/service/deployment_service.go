@@ -4,7 +4,6 @@ import (
     "context"
     "time"
 
-    appsv1 "k8s.io/api/apps/v1"
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
 )
 
@@ -60,4 +59,3 @@ func RestartDeployment(cluster, namespace, name string) error {
 }
 
 func getInt32(p *int32) int32 { if p == nil { return 0 }; return *p }
-
