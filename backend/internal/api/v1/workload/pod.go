@@ -44,8 +44,11 @@ func RegisterPod(r *gin.RouterGroup) {
     r.GET("/pods/detail", func(c *gin.Context) {
         cluster := c.Query("cluster"); ns := c.Query("namespace"); name := c.Query("name")
         if ns == "" { ns = "default" }
-        pod, err := service.GetPod(cluster, ns, name)
+        detail, err := service.GetPodDetail(cluster, ns, name)
         if err != nil { c.JSON(http.StatusInternalServerError, gin.H{"code":50003, "message": err.Error()}); return }
+<<<<<<< HEAD
+        c.JSON(http.StatusOK, gin.H{"code":0, "message":"success", "data": detail})
+=======
         evs, _ := service.ListPodEvents(cluster, ns, name)
         yamlStr := ""
         if b, err := yaml.Marshal(pod); err == nil {
@@ -60,5 +63,6 @@ func RegisterPod(r *gin.RouterGroup) {
                 "yaml":   yamlStr,
             },
         })
+>>>>>>> origin/develop
     })
 }

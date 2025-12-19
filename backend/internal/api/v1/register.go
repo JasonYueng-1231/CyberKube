@@ -8,6 +8,7 @@ import (
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/metrics"
     confapi "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/config"
     svcapi "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/service"
+    netapi "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/network"
     "github.com/JasonYueng-1231/CyberKube/backend/internal/api/v1/workload"
     "github.com/JasonYueng-1231/CyberKube/backend/internal/middleware"
     "github.com/gin-gonic/gin"
@@ -59,4 +60,5 @@ func RegisterServiceAPI(r *gin.RouterGroup) {
     g := r.Group("")
     g.Use(middleware.AuthMiddleware())
     svcapi.RegisterService(g)
+    netapi.RegisterIngress(g)
 }

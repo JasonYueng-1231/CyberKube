@@ -1,4 +1,4 @@
-import { lazy, Suspense } from 'react';
+import { lazy, Suspense, useMemo } from 'react';
 import { Spin } from 'antd';
 
 const Monaco = lazy(() => import('@monaco-editor/react'));
@@ -11,6 +11,20 @@ interface Props {
 }
 
 export default function YamlEditor({ value, onChange, height = 420, readOnly = false }: Props) {
+<<<<<<< HEAD
+  const options = useMemo(
+    () => ({
+      minimap: { enabled: false },
+      fontSize: 13,
+      readOnly,
+      scrollBeyondLastLine: false,
+      wordWrap: 'on',
+    }),
+    [readOnly],
+  );
+
+=======
+>>>>>>> origin/develop
   return (
     <Suspense fallback={<Spin />}>
       <Monaco
@@ -18,7 +32,11 @@ export default function YamlEditor({ value, onChange, height = 420, readOnly = f
         defaultLanguage="yaml"
         value={value}
         onChange={(v) => onChange(v || '')}
+<<<<<<< HEAD
+        options={options}
+=======
         options={{ minimap: { enabled: false }, fontSize: 13, readOnly }}
+>>>>>>> origin/develop
       />
     </Suspense>
   );

@@ -16,7 +16,6 @@ export default function Workloads() {
   const [pods, setPods] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [logOpen, setLogOpen] = useState(false);
-  const [logs, setLogs] = useState('');
   const [form] = Form.useForm();
   const [logCtx, setLogCtx] = useState<any>(null);
   const [termOpen, setTermOpen] = useState(false);
