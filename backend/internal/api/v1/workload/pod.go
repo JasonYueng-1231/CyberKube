@@ -6,6 +6,7 @@ import (
 
     "github.com/JasonYueng-1231/CyberKube/backend/internal/service"
     "github.com/gin-gonic/gin"
+    "sigs.k8s.io/yaml"
 )
 
 func RegisterPod(r *gin.RouterGroup) {
@@ -46,6 +47,18 @@ func RegisterPod(r *gin.RouterGroup) {
         pod, err := service.GetPod(cluster, ns, name)
         if err != nil { c.JSON(http.StatusInternalServerError, gin.H{"code":50003, "message": err.Error()}); return }
         evs, _ := service.ListPodEvents(cluster, ns, name)
-        c.JSON(http.StatusOK, gin.H{"code":0, "message":"success", "data": gin.H{"pod": pod, "events": evs}})
+        yamlStr := ""
+        if b, err := yaml.Marshal(pod); err == nil {
+            yamlStr = string(b)
+        }
+        c.JSON(http.StatusOK, gin.H{
+            "code":    0,
+            "message": "success",
+            "data": gin.H{
+                "pod":    pod,
+                "events": evs,
+                "yaml":   yamlStr,
+            },
+        })
     })
 }
