@@ -3,8 +3,10 @@ package service
 import (
     "context"
     "io"
+    "sort"
     "strconv"
     "strings"
+    "time"
 
     corev1 "k8s.io/api/core/v1"
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
@@ -72,7 +74,27 @@ func ListPodEvents(cluster, namespace, name string) ([]corev1.Event, error) {
     if err != nil { return nil, err }
     list, err := cli.CoreV1().Events(namespace).List(context.TODO(), metav1.ListOptions{FieldSelector: "involvedObject.kind=Pod,involvedObject.name="+name})
     if err != nil { return nil, err }
-    return list.Items, nil
+    items := list.Items
+    sort.SliceStable(items, func(i, j int) bool {
+        ti := eventTimeOrLast(&items[i])
+        tj := eventTimeOrLast(&items[j])
+        // 按时间倒序
+        return tj.Before(ti)
+    })
+    return items, nil
+}
+
+func eventTimeOrLast(e *corev1.Event) time.Time {
+    if !e.LastTimestamp.IsZero() {
+        return e.LastTimestamp.Time
+    }
+    if !e.EventTime.IsZero() {
+        return e.EventTime.Time
+    }
+    if !e.CreationTimestamp.IsZero() {
+        return e.CreationTimestamp.Time
+    }
+    return time.Time{}
 }
 
 type PodDetail struct {

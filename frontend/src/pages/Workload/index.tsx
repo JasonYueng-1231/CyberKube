@@ -16,7 +16,6 @@ export default function Workloads() {
   const [pods, setPods] = useState<any[]>([]);
   const [loading, setLoading] = useState(false);
   const [logOpen, setLogOpen] = useState(false);
-  const [logs, setLogs] = useState('');
   const [form] = Form.useForm();
   const [logCtx, setLogCtx] = useState<any>(null);
   const [termOpen, setTermOpen] = useState(false);
@@ -24,7 +23,7 @@ export default function Workloads() {
   const [depYamlOpen, setDepYamlOpen] = useState(false);
   const [depEdit, setDepEdit] = useState<string | undefined>(undefined);
   const [podDetailOpen, setPodDetailOpen] = useState(false);
-  const [podDetailCtx, setPodDetailCtx] = useState<any>(null);
+  const [podDetailName, setPodDetailName] = useState<string | undefined>(undefined);
 
   useEffect(() => { (async () => {
     const data = await api('/clusters');
@@ -69,6 +68,10 @@ export default function Workloads() {
     setTermCtx({ pod: r.name, containers: r.containers });
     setTermOpen(true);
   };
+  const openPodDetail = (r: any) => {
+    setPodDetailName(r.name);
+    setPodDetailOpen(true);
+  };
 
   return (
     <Card className="cyber-card" title="工作负载">
@@ -108,7 +111,7 @@ export default function Workloads() {
               { title:'重启', dataIndex:'restarts' },
               { title:'节点', dataIndex:'node_name' },
               { title:'操作', render: (_:any, r:any)=> <>
-                <Button size="small" onClick={()=> { setPodDetailCtx(r); setPodDetailOpen(true); }} style={{marginRight:8}}>详情</Button>
+                <Button size="small" onClick={()=> openPodDetail(r)} style={{marginRight:8}}>详情</Button>
                 <Button size="small" onClick={()=> viewLogs(r)} style={{marginRight:8}}>日志(流)</Button>
                 <Button size="small" onClick={()=> openShell(r)}>Shell</Button>
               </> },
@@ -120,7 +123,7 @@ export default function Workloads() {
       <LogStreamModal open={logOpen} onClose={()=> setLogOpen(false)} cluster={cluster} namespace={namespace} pod={logCtx?.pod} containers={logCtx?.containers} />
       <TerminalModal open={termOpen} onClose={()=> setTermOpen(false)} cluster={cluster} namespace={namespace} pod={termCtx?.pod} containers={termCtx?.containers} />
       <GenericYamlModal open={depYamlOpen} onClose={()=> { setDepYamlOpen(false); loadDeps(); }} cluster={cluster} namespace={namespace} name={depEdit} kind='deployment' />
-      <PodDetailModal open={podDetailOpen} onClose={()=> setPodDetailOpen(false)} cluster={cluster} namespace={namespace} pod={podDetailCtx?.name || ''} />
+      <PodDetailModal open={podDetailOpen} onClose={()=> setPodDetailOpen(false)} cluster={cluster} namespace={namespace} podName={podDetailName} />
     </Card>
   );
 }

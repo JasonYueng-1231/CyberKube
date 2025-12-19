@@ -1,7 +1,7 @@
 import { useEffect, useMemo, useState } from 'react';
 import { Descriptions, Modal, Tabs, Tag, Typography, message } from 'antd';
-import YamlEditor from './YamlEditor';
 import { api } from '@/utils/request';
+import YamlEditor from './YamlEditor';
 
 const { Text } = Typography;
 
@@ -10,19 +10,23 @@ interface Props {
   onClose: () => void;
   cluster: string;
   namespace: string;
-  pod: string;
+  podName?: string;
 }
 
-export default function PodDetailModal({ open, onClose, cluster, namespace, pod }: Props) {
+export default function PodDetailModal({ open, onClose, cluster, namespace, podName }: Props) {
   const [loading, setLoading] = useState(false);
   const [data, setData] = useState<any>(null);
 
   useEffect(() => {
-    if (!open || !pod) return;
+    if (!open || !podName) return;
     (async () => {
       setLoading(true);
       try {
-        const d = await api(`/pods/detail?cluster=${cluster}&namespace=${namespace}&name=${pod}`);
+        const d = await api(
+          `/pods/detail?cluster=${encodeURIComponent(cluster)}&namespace=${encodeURIComponent(
+            namespace,
+          )}&name=${encodeURIComponent(podName)}`,
+        );
         setData(d);
       } catch (e: any) {
         message.error(e.message || '获取 Pod 详情失败');
@@ -30,13 +34,13 @@ export default function PodDetailModal({ open, onClose, cluster, namespace, pod 
         setLoading(false);
       }
     })();
-  }, [open, cluster, namespace, pod]);
+  }, [open, cluster, namespace, podName]);
 
   const containers = useMemo(() => data?.pod?.spec?.containers || [], [data]);
   const initContainers = useMemo(() => data?.pod?.spec?.initContainers || [], [data]);
 
   return (
-    <Modal width={960} open={open} onCancel={onClose} title={`Pod 详情: ${pod}`} footer={null}>
+    <Modal width={960} open={open} onCancel={onClose} title={`Pod 详情: ${podName || ''}`} footer={null}>
       <Tabs
         items={[
           {

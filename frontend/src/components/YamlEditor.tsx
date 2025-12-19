@@ -3,12 +3,12 @@ import { Spin } from 'antd';
 
 const Monaco = lazy(() => import('@monaco-editor/react'));
 
-type Props = {
+interface Props {
   value: string;
   onChange: (v: string) => void;
   height?: number;
   readOnly?: boolean;
-};
+}
 
 export default function YamlEditor({ value, onChange, height = 420, readOnly = false }: Props) {
   const options = useMemo(
