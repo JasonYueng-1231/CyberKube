@@ -3,13 +3,21 @@ import { useEffect, useState } from 'react';
 import { api } from '@/utils/request';
 import YamlEditor from './YamlEditor';
 
-interface Props { open: boolean; onClose: () => void; cluster: string; namespace: string; name?: string; kind: 'service'|'configmap'|'secret'|'deployment' }
+interface Props { open: boolean; onClose: () => void; cluster: string; namespace: string; name?: string; kind: 'service'|'configmap'|'secret'|'deployment'|'ingress' }
 
 export default function GenericYamlModal({ open, onClose, cluster, namespace, name, kind }: Props) {
   const [yaml, setYaml] = useState('');
   const isEdit = !!name;
 
-  const base = kind === 'service' ? 'services' : (kind === 'configmap' ? 'configmaps' : (kind === 'secret' ? 'secrets' : 'deployments'));
+  const base = kind === 'service'
+    ? 'services'
+    : kind === 'configmap'
+    ? 'configmaps'
+    : kind === 'secret'
+    ? 'secrets'
+    : kind === 'ingress'
+    ? 'ingresses'
+    : 'deployments';
 
   useEffect(() => { (async () => {
     if (!open) return;
@@ -79,6 +87,24 @@ metadata:
   namespace: ${ns}
 data:
   key: value
+`;
+  if (kind === 'ingress') return `apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: demo-ing
+  namespace: ${ns}
+spec:
+  rules:
+    - host: demo.example.com
+      http:
+        paths:
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: demo-svc
+                port:
+                  number: 80
 `;
   return `apiVersion: v1
 kind: Secret
