@@ -95,6 +95,7 @@ func eventTimeOrLast(e *corev1.Event) time.Time {
         return e.CreationTimestamp.Time
     }
     return time.Time{}
+<<<<<<< HEAD
 }
 
 type PodDetail struct {
@@ -110,4 +111,6 @@ func GetPodDetail(cluster, namespace, name string) (*PodDetail, error) {
     evs, _ := ListPodEvents(cluster, namespace, name) // 事件失败不阻断整体
     yml, _ := yaml.Marshal(pod)
     return &PodDetail{Pod: pod, Events: evs, Yaml: string(yml)}, nil
+=======
+>>>>>>> origin/develop
 }
