@@ -8,6 +8,7 @@ import (
 
     corev1 "k8s.io/api/core/v1"
     metav1 "k8s.io/apimachinery/pkg/apis/meta/v1"
+    "sigs.k8s.io/yaml"
 )
 
 type PodItem struct {
@@ -72,4 +73,19 @@ func ListPodEvents(cluster, namespace, name string) ([]corev1.Event, error) {
     list, err := cli.CoreV1().Events(namespace).List(context.TODO(), metav1.ListOptions{FieldSelector: "involvedObject.kind=Pod,involvedObject.name="+name})
     if err != nil { return nil, err }
     return list.Items, nil
+}
+
+type PodDetail struct {
+    Pod    *corev1.Pod    `json:"pod"`
+    Events []corev1.Event `json:"events"`
+    Yaml   string         `json:"yaml"`
+}
+
+// GetPodDetail 聚合 Pod 详情、事件与 YAML，方便前端一次获取
+func GetPodDetail(cluster, namespace, name string) (*PodDetail, error) {
+    pod, err := GetPod(cluster, namespace, name)
+    if err != nil { return nil, err }
+    evs, _ := ListPodEvents(cluster, namespace, name) // 事件失败不阻断整体
+    yml, _ := yaml.Marshal(pod)
+    return &PodDetail{Pod: pod, Events: evs, Yaml: string(yml)}, nil
 }
